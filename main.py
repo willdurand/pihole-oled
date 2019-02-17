@@ -120,7 +120,7 @@ try:
 
             mem = psutil.virtual_memory().percent
             draw.text(
-                (x, top + 14),
+                (x, top + 24),
                 "Mem usage : %s%%" % mem,
                 font=font,
                 fill=255
@@ -128,7 +128,7 @@ try:
 
             disk = psutil.disk_usage(mount_point).percent
             draw.text(
-                (x, top + 24),
+                (x, top + 34),
                 "Disk usage: %s%%" % disk,
                 font=font,
                 fill=255
@@ -136,7 +136,7 @@ try:
 
             addr = psutil.net_if_addrs()[interface][0]
             draw.text(
-                (x, top + 34),
+                (x, top + 44),
                 "IP (%s)  : %s" % (interface, addr.address),
                 font=font,
                 fill=255
