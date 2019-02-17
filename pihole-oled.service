@@ -1,0 +1,13 @@
+[Unit]
+Description=Display Pi-hole and system information on an OLED screen
+After=network.target
+
+[Service]
+User=pi
+Restart=always
+Type=simple
+WorkingDirectory=/home/pi/pihole-oled
+ExecStart=/home/pi/.local/bin/pipenv run python3 main.py
+
+[Install]
+WantedBy=multi-user.target
