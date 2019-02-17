@@ -1,7 +1,5 @@
-import json
 import os
 import platform
-import subprocess
 import time
 
 import Adafruit_SSD1306
@@ -23,12 +21,14 @@ mount_point = os.getenv('PIHOLE_OLED_MOUNT_POINT', '/')
 # There is no reset pin on the SSD1306 0.96"
 RST = None
 
+
 class NoopImage:
 
     draw = None
 
     def print(self):
         self.draw.print()
+
 
 class InMemoryImageDraw:
 
@@ -47,6 +47,7 @@ class InMemoryImageDraw:
         print("\n".join(self.content))
         self.content = []
 
+
 class NoopDisplay:
 
     width = 0
@@ -63,6 +64,7 @@ class NoopDisplay:
 
     def display(self):
         pass
+
 
 try:
     disp = Adafruit_SSD1306.SSD1306_128_64(rst=RST)
@@ -90,7 +92,7 @@ else:
 
 top = 0
 x = 0
-sleep = 1 # seconds
+sleep = 1  # seconds
 
 hostname = platform.node()
 
@@ -111,7 +113,9 @@ try:
                 fill=255
             )
 
-            uptime = datetime.now() - datetime.fromtimestamp(psutil.boot_time())
+            uptime = datetime.now() - datetime.fromtimestamp(
+                psutil.boot_time()
+            )
             draw.text(
                 (x, top + 12),
                 "Up: %s" % humanize.naturaltime(uptime),
@@ -128,18 +132,42 @@ try:
 
             cpu = int(psutil.cpu_percent(percpu=False))
             draw.text((x, top + 34), "CPU", font=font, fill=255)
-            draw.rectangle((x + 26, top + 34 , 126, top + 34 + 6), outline=255, fill=0)
-            draw.rectangle((x + 26, top + 34, 26 + cpu, top + 34 + 6), outline=255, fill=255)
+            draw.rectangle(
+                (x + 26, top + 34, 126, top + 34 + 6),
+                outline=255,
+                fill=0
+            )
+            draw.rectangle(
+                (x + 26, top + 34, 26 + cpu, top + 34 + 6),
+                outline=255,
+                fill=255
+            )
 
             mem = int(psutil.virtual_memory().percent)
             draw.text((x, top + 44), "RAM", font=font, fill=255)
-            draw.rectangle((x + 26, top + 44 , 126, top + 44 + 6), outline=255, fill=0)
-            draw.rectangle((x + 26, top + 44, 26 + cpu, top + 44 + 6), outline=255, fill=255)
+            draw.rectangle(
+                (x + 26, top + 44, 126, top + 44 + 6),
+                outline=255,
+                fill=0
+            )
+            draw.rectangle(
+                (x + 26, top + 44, 26 + cpu, top + 44 + 6),
+                outline=255,
+                fill=255
+            )
 
             disk = int(psutil.disk_usage(mount_point).percent)
             draw.text((x, top + 54), "Disk", font=font, fill=255)
-            draw.rectangle((x + 26, top + 54 , 126, top + 54 + 6), outline=255, fill=0)
-            draw.rectangle((x + 26, top + 54, 26 + disk, top + 54 + 6), outline=255, fill=255)
+            draw.rectangle(
+                (x + 26, top + 54, 126, top + 54 + 6),
+                outline=255,
+                fill=0
+            )
+            draw.rectangle(
+                (x + 26, top + 54, 26 + disk, top + 54 + 6),
+                outline=255,
+                fill=255
+            )
         else:
             try:
                 req = requests.get('http://pi.hole/admin/api.php')
@@ -156,7 +184,10 @@ try:
 
                 draw.text(
                     (x, top + 22),
-                    "Blocked: %d (%d%%)" % (data["ads_blocked_today"], data["ads_percentage_today"]),
+                    "Blocked: %d (%d%%)" % (
+                        data["ads_blocked_today"],
+                        data["ads_percentage_today"]
+                    ),
                     font=font,
                     fill=255
                 )
@@ -175,7 +206,7 @@ try:
                     font=font,
                     fill=255
                 )
-            except:
+            except:  ## noqa
                 draw.text(
                     (x, top),
                     "ERROR!",
@@ -188,5 +219,5 @@ try:
         time.sleep(sleep)
 
         seconds += 1
-except KeyboardInterrupt:
+except (KeyboardInterrupt, SystemExit):
     print("Exiting...")
