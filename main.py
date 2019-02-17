@@ -22,54 +22,15 @@ mount_point = os.getenv('PIHOLE_OLED_MOUNT_POINT', '/')
 RST = None
 
 
-class NoopImage:
-
-    draw = None
-
-    def print(self):
-        self.draw.print()
-
-
-class InMemoryImageDraw:
-
-    content = []
-
-    def __init__(self, image):
-        image.draw = self
-
-    def text(self, xy, text, font=None, fill=None):
-        self.content.append(text)
-
-    def rectangle(self, *args, **kwargs):
-        os.system("clear")
-
-    def print(self):
-        print("\n".join(self.content))
-        self.content = []
-
-
-class NoopDisplay:
-
-    width = 0
-    height = 0
-
-    def begin(self):
-        pass
-
-    def clear(self):
-        pass
-
-    def image(self, image):
-        image.print()
-
-    def display(self):
-        pass
-
-
 try:
     disp = Adafruit_SSD1306.SSD1306_128_64(rst=RST)
     is_noop = False
 except FileNotFoundError:
+    # The error is probably due to this script being run on a system that does
+    # not have an OLED connected. In this case, we create fake objects to
+    # render the result in the console.
+    from image_noop import NoopDisplay, NoopImage, InMemoryImageDraw
+
     disp = NoopDisplay()
     is_noop = True
 
@@ -90,24 +51,22 @@ else:
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype('./SF_Pixelate.ttf', 10)
 
-top = 0
-x = 0
 sleep = 1  # seconds
 
 hostname = platform.node()
 
 try:
-    seconds = 0
+    elapsed_seconds = 0
     while True:
         draw.rectangle((0, 0, width, height), outline=0, fill=0)
 
-        if seconds == 10:
-            seconds = 0
+        if elapsed_seconds == 10:
+            elapsed_seconds = 0
 
-        if seconds >= 5:
+        if elapsed_seconds >= 5:
             addr = psutil.net_if_addrs()[interface][0]
             draw.text(
-                (x, top),
+                (0, 0),
                 "Pi-hole %s" % addr.address.rjust(15),
                 font=font,
                 fill=255
@@ -117,54 +76,54 @@ try:
                 psutil.boot_time()
             )
             draw.text(
-                (x, top + 12),
+                (0, 12),
                 "Up: %s" % humanize.naturaltime(uptime),
                 font=font,
                 fill=255
             )
 
             draw.text(
-                (x, top + 22),
+                (0, 22),
                 "    %.1f %.1f %.1f" % os.getloadavg(),
                 font=font,
                 fill=255
             )
 
             cpu = int(psutil.cpu_percent(percpu=False))
-            draw.text((x, top + 34), "CPU", font=font, fill=255)
+            draw.text((0, 34), "CPU", font=font, fill=255)
             draw.rectangle(
-                (x + 26, top + 34, 126, top + 34 + 6),
+                (26, 34, 126, 34 + 6),
                 outline=255,
                 fill=0
             )
             draw.rectangle(
-                (x + 26, top + 34, 26 + cpu, top + 34 + 6),
+                (26, 34, 26 + cpu, 34 + 6),
                 outline=255,
                 fill=255
             )
 
             mem = int(psutil.virtual_memory().percent)
-            draw.text((x, top + 44), "RAM", font=font, fill=255)
+            draw.text((0, 44), "RAM", font=font, fill=255)
             draw.rectangle(
-                (x + 26, top + 44, 126, top + 44 + 6),
+                (26, 44, 126, 44 + 6),
                 outline=255,
                 fill=0
             )
             draw.rectangle(
-                (x + 26, top + 44, 26 + cpu, top + 44 + 6),
+                (26, 44, 26 + cpu, 44 + 6),
                 outline=255,
                 fill=255
             )
 
             disk = int(psutil.disk_usage(mount_point).percent)
-            draw.text((x, top + 54), "Disk", font=font, fill=255)
+            draw.text((0, 54), "Disk", font=font, fill=255)
             draw.rectangle(
-                (x + 26, top + 54, 126, top + 54 + 6),
+                (26, 54, 126, 54 + 6),
                 outline=255,
                 fill=0
             )
             draw.rectangle(
-                (x + 26, top + 54, 26 + disk, top + 54 + 6),
+                (26, 54, 26 + disk, 54 + 6),
                 outline=255,
                 fill=255
             )
@@ -174,16 +133,16 @@ try:
                 data = req.json()
 
                 draw.text(
-                    (x, top),
+                    (0, 0),
                     "Pi-hole (%s)" % data["status"],
                     font=font,
                     fill=255
                 )
 
-                draw.line((x, top + 12, width, top + 12), fill=255)
+                draw.line((0, 12, width, 12), fill=255)
 
                 draw.text(
-                    (x, top + 22),
+                    (0, 22),
                     "Blocked: %d (%d%%)" % (
                         data["ads_blocked_today"],
                         data["ads_percentage_today"]
@@ -192,23 +151,23 @@ try:
                     fill=255
                 )
                 draw.text(
-                    (x, top + 32),
+                    (0, 32),
                     "Queries: %d" % data["dns_queries_today"],
                     font=font,
                     fill=255
                 )
 
-                draw.line((x, top + 50, width, top + 50), fill=255)
+                draw.line((0, 50, width, 50), fill=255)
 
                 draw.text(
-                    (x, top + 54),
+                    (0, 54),
                     "Blocklist: %d" % data["domains_being_blocked"],
                     font=font,
                     fill=255
                 )
             except:  ## noqa
                 draw.text(
-                    (x, top),
+                    (0, 0),
                     "ERROR!",
                     font=font,
                     fill=255
@@ -218,6 +177,6 @@ try:
         disp.display()
         time.sleep(sleep)
 
-        seconds += 1
+        elapsed_seconds += 1
 except (KeyboardInterrupt, SystemExit):
     print("Exiting...")
