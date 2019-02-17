@@ -103,9 +103,10 @@ try:
             seconds = 0
 
         if seconds >= 5:
+            addr = psutil.net_if_addrs()[interface][0]
             draw.text(
                 (x, top),
-                "Pi-hole",
+                "Pi-hole (%s)" % addr.address,
                 font=font,
                 fill=255
             )
@@ -121,7 +122,7 @@ try:
             mem = psutil.virtual_memory().percent
             draw.text(
                 (x, top + 24),
-                "Mem usage : %s%%" % mem,
+                "Mem usage: %s%%" % mem,
                 font=font,
                 fill=255
             )
@@ -130,14 +131,6 @@ try:
             draw.text(
                 (x, top + 34),
                 "Disk usage: %s%%" % disk,
-                font=font,
-                fill=255
-            )
-
-            addr = psutil.net_if_addrs()[interface][0]
-            draw.text(
-                (x, top + 44),
-                "IP (%s)  : %s" % (interface, addr.address),
                 font=font,
                 fill=255
             )
