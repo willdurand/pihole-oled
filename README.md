@@ -1,28 +1,78 @@
 # pihole-oled
 
+This project requires a Raspberry Pi with [Pi-hole](https://pi-hole.net/)
+installed as well as Python 3.5.
+
 
 ## Installation
 
+### Requirements
+
+If you do not have `pip3` installed, start by installing it:
+
 ```
-$ sudo apt-get install libopenjp2-7 libtiff5 python3-pip
+$ sudo apt-get install python3-pip
 ```
+
+If you do not have `pipenv` installed, install it too:
 
 ```
 $ pip3 install --user pipenv
 ```
 
+Note: the command above keeps everything into a `~/.local` directory. You can
+update the current user's `PATH` by adding the following lines into your
+`.bashrc` (or equivalent):
+
 ```
+export PY_USER_BIN="$(python -c 'import site; print(site.USER_BASE + "/bin")')"
+export PATH="$PY_USER_BIN:$PATH"
+```
+
+Now install a few libraries for
+[Pillow](https://pillow.readthedocs.io/en/stable/index.html):
+
+```
+$ sudo apt-get install libopenjp2-7 libtiff5
+```
+
+### Project installation
+
+Clone this project:
+
+```
+$ git clone https://github.com/willdurand/pihole-oled.git /home/pi/pihole-oled
+```
+
+Install the python dependencies:
+
+```
+$ cd /home/pi/pihole-oled
 $ pipenv install
 ```
+
+If you plug the OLED display and run the command below, you should see some
+information on the display:
+
+```
+$ pipenv run python3 main.py
+```
+
+You can exit the script with <kbd>ctrl+c</kbd>.
+
+### Systemd configuration
+
+You can install a `systemd` service by copying the provided configuration file
+using the command below. This service will automatically run the python script
+mentioned in the previous section on boot:
 
 ```
 $ sudo cp pihole-oled.service /etc/systemd/user/
 ```
 
-```
-$ sudo systemctl enable /etc/systemd/user/pihole-oled.service
-```
+Enable, then start the `pihole-oled.service`:
 
 ```
+$ sudo systemctl enable /etc/systemd/user/pihole-oled.service
 $ sudo systemctl start pihole-oled.service
 ```
