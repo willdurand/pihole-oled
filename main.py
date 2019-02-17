@@ -17,7 +17,7 @@ from datetime import datetime
 # Config
 
 # Network interface
-interface = 'en0'
+interface = 'eth0'
 # Mount point for disk usage info
 mount_point = '/'
 # There is no reset pin on the SSD1306 0.96"
