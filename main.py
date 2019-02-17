@@ -17,7 +17,7 @@ from datetime import datetime
 # Config
 
 # Network interface
-interface = 'eth0'
+interface = os.getenv('PIHOLE_OLED_INTERFACE', 'eth0')
 # Mount point for disk usage info
 mount_point = '/'
 # There is no reset pin on the SSD1306 0.96"
@@ -106,34 +106,40 @@ try:
             addr = psutil.net_if_addrs()[interface][0]
             draw.text(
                 (x, top),
-                "Pi-hole (%s)" % addr.address,
+                "Pi-hole %s" % addr.address.rjust(15),
                 font=font,
                 fill=255
             )
 
-            cpu = psutil.cpu_percent(percpu=False)
+            uptime = datetime.now() - datetime.fromtimestamp(psutil.boot_time())
             draw.text(
-                (x, top + 14),
-                "CPU usage : %s%%" % cpu,
+                (x, top + 12),
+                "Up: %s" % humanize.naturaltime(uptime),
                 font=font,
                 fill=255
             )
 
-            mem = psutil.virtual_memory().percent
             draw.text(
-                (x, top + 24),
-                "Mem usage: %s%%" % mem,
+                (x, top + 22),
+                "    %.1f %.1f %.1f" % os.getloadavg(),
                 font=font,
                 fill=255
             )
 
-            disk = psutil.disk_usage(mount_point).percent
-            draw.text(
-                (x, top + 34),
-                "Disk usage: %s%%" % disk,
-                font=font,
-                fill=255
-            )
+            cpu = int(psutil.cpu_percent(percpu=False))
+            draw.text((x, top + 34), "CPU", font=font, fill=255)
+            draw.rectangle((x + 26, top + 34 , 126, top + 34 + 6), outline=255, fill=0)
+            draw.rectangle((x + 26, top + 34, 26 + cpu, top + 34 + 6), outline=255, fill=255)
+
+            mem = int(psutil.virtual_memory().percent)
+            draw.text((x, top + 44), "RAM", font=font, fill=255)
+            draw.rectangle((x + 26, top + 44 , 126, top + 44 + 6), outline=255, fill=0)
+            draw.rectangle((x + 26, top + 44, 26 + cpu, top + 44 + 6), outline=255, fill=255)
+
+            disk = int(psutil.disk_usage(mount_point).percent)
+            draw.text((x, top + 54), "Disk", font=font, fill=255)
+            draw.rectangle((x + 26, top + 54 , 126, top + 54 + 6), outline=255, fill=0)
+            draw.rectangle((x + 26, top + 54, 26 + disk, top + 54 + 6), outline=255, fill=255)
         else:
             try:
                 req = requests.get('http://pi.hole/admin/api.php')
@@ -145,30 +151,27 @@ try:
                     font=font,
                     fill=255
                 )
+
+                draw.line((x, top + 12, width, top + 12), fill=255)
+
                 draw.text(
-                    (x, top + 14),
+                    (x, top + 22),
                     "Blocked: %d (%d%%)" % (data["ads_blocked_today"], data["ads_percentage_today"]),
                     font=font,
                     fill=255
                 )
                 draw.text(
-                    (x, top + 24),
+                    (x, top + 32),
                     "Queries: %d" % data["dns_queries_today"],
                     font=font,
                     fill=255
                 )
 
-                av1, av2, av3 = os.getloadavg()
-                draw.text(
-                    (x, top + 44),
-                    "Load: %.1f %.1f %.1f" % os.getloadavg(),
-                    font=font,
-                    fill=255
-                )
-                uptime = datetime.now() - datetime.fromtimestamp(psutil.boot_time())
+                draw.line((x, top + 50, width, top + 50), fill=255)
+
                 draw.text(
                     (x, top + 54),
-                    "Up: %s" % humanize.naturaltime(uptime),
+                    "Blocklist: %d" % data["domains_being_blocked"],
                     font=font,
                     fill=255
                 )
