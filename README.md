@@ -5,6 +5,7 @@ installed, the [I2C bus
 enabled](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c)
 and Python 3.5.
 
+
 ## Installation
 
 ### Requirements
@@ -78,8 +79,30 @@ $ sudo systemctl enable /etc/systemd/user/pihole-oled.service
 $ sudo systemctl start pihole-oled.service
 ```
 
-License
--------
+
+## Dev corner
+
+This sections is only relevant if you intent to work on this project.
+
+We use
+[conda](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
+to ship a (hopefully) reproducible environment to work on this project. Start by
+installing `conda`, then create the environment for this project:
+
+```
+$ conda env create -f environment.yml
+```
+
+Do not forget to enable this environment:
+
+```
+$ conda activate
+```
+
+You should have `python3` (3.5) and `pipenv` available now.
+
+
+## License
 
 This project is released under the MIT License. See the bundled [LICENSE
 file](./LICENSE) for details.

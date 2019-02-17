@@ -16,10 +16,10 @@ from datetime import datetime
 
 # Config
 
-# Network interface
+# Network interface to retrieve the IP address
 interface = os.getenv('PIHOLE_OLED_INTERFACE', 'eth0')
 # Mount point for disk usage info
-mount_point = '/'
+mount_point = os.getenv('PIHOLE_OLED_MOUNT_POINT', '/')
 # There is no reset pin on the SSD1306 0.96"
 RST = None
 

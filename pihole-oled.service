@@ -1,13 +1,32 @@
 [Unit]
-Description=Display Pi-hole and system information on an OLED screen
-After=network.target
+Description=Display Pi-hole and system information on an OLED screen via I2C
+Requires=network.target
 
 [Service]
-User=pi
-Restart=always
 Type=simple
+User=pi
+
+; Uncomment the lines below to change the config
+;Environment=PIHOLE_OLED_INTERFACE=eth0
+;Environment=PIHOLE_OLED_MOUNT_POINT=/
+
 WorkingDirectory=/home/pi/pihole-oled
 ExecStart=/home/pi/.local/bin/pipenv run python3 main.py
+
+; Always restart the script
+Restart=always
+
+; cf. https://www.darkcoding.net/software/the-joy-of-systemd/
+; /usr, /boot and /etc are read-only
+ProtectSystem=full
+; $HOME is read only ..
+ProtectHome=read-only
+; /tmp is isolated from all other processes
+PrivateTmp=true
+; Minimal /dev, no physical device access
+PrivateDevices=true
+; Don't allow process to raise privileges (e.g. disable suid)
+NoNewPrivileges=true
 
 [Install]
 WantedBy=multi-user.target
