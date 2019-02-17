@@ -1,8 +1,9 @@
 # pihole-oled
 
 This project requires a Raspberry Pi with [Pi-hole](https://pi-hole.net/)
-installed as well as Python 3.5.
-
+installed, the [I2C bus
+enabled](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c)
+and Python 3.5.
 
 ## Installation
 
@@ -76,3 +77,9 @@ Enable, then start the `pihole-oled.service`:
 $ sudo systemctl enable /etc/systemd/user/pihole-oled.service
 $ sudo systemctl start pihole-oled.service
 ```
+
+License
+-------
+
+This project is released under the MIT License. See the bundled [LICENSE
+file](./LICENSE) for details.
