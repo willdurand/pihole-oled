@@ -23,8 +23,6 @@ ProtectSystem=full
 ProtectHome=read-only
 ; /tmp is isolated from all other processes
 PrivateTmp=true
-; Minimal /dev, no physical device access
-PrivateDevices=true
 ; Don't allow process to raise privileges (e.g. disable suid)
 NoNewPrivileges=true
 
