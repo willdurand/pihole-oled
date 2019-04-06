@@ -51,3 +51,9 @@ class NoopDisplay:
 
     def display(self):
         pass
+
+    def set_contrast(self, contrast):
+        pass
+
+    def command(self, command):
+        pass

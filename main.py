@@ -39,6 +39,13 @@ disp.begin()
 width = disp.width
 height = disp.height
 
+# Reduce contrast
+disp.command(Adafruit_SSD1306.SSD1306_SETPRECHARGE)
+disp.command(5)
+disp.set_contrast(5)
+disp.command(Adafruit_SSD1306.SSD1306_SETVCOMDETECT)
+disp.command(0)
+
 disp.clear()
 disp.display()
 
