@@ -16,4 +16,4 @@ psutil = "*"
 "RPi.GPIO" = {version = "*",sys_platform = "== 'linux'"}
 
 [requires]
-python_version = "3.7"
+python_version = "3.9"
